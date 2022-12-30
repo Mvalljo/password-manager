@@ -2,15 +2,20 @@ from tkinter import *
 from tkinter import messagebox
 from random import choice, randint, shuffle
 import pyperclip
+import json
+
+
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
 def generate_password():
-    letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
-               'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
+    letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u',
+               'v',
+               'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q',
+               'R',
                'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
     numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
     symbols = ['!', '#', '$', '%', '&', '(', ')', '*', '+']
 
-    pwd_list = [choice(letters) for _ in range(randint(8, 10))] +   \
+    pwd_list = [choice(letters) for _ in range(randint(8, 10))] + \
                [choice(symbols) for _ in range(randint(2, 4))] + \
                [choice(numbers) for _ in range(randint(2, 4))]
     shuffle(pwd_list)
@@ -19,21 +24,32 @@ def generate_password():
     password_input.insert(0, pwd)
     pyperclip.copy(pwd)
 
+
 # ---------------------------- SAVE PASSWORD ------------------------------- #
 def save():
-
     website = website_input.get()
     email = email_username_input.get()
     password = password_input.get()
+    new_data = {
+        website: {
+            "email": email,
+            "password": password,
+        }
+    }
 
     if website == "" or password == "":
         messagebox.askokcancel(title="Oops", message="Don't leave any fields empty!")
     else:
-        is_ok = messagebox.askokcancel(title=website, message=f"These are the details entered: \n Email: {email}"
-                                       f"\nPassword: {password} \nIs it ok to save?")
-        if is_ok:
-            with open("data.txt", "a") as file:
-                file.write(f"{website} | {email} | {password}\n")
+        with open("data.json", "r") as file:
+            # Reading old data
+            data = json.load(file)
+            # updating old data with new data
+            data.update(new_data)
+
+        with open("data.json", "w") as file:
+            # saving updated data
+            json.dump(new_data, file, indent=4)
+
             website_input.delete(0, END)
             password_input.delete(0, END)
 
