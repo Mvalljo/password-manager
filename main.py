@@ -5,6 +5,24 @@ import pyperclip
 import json
 
 
+# ---------------------------- FIND PASSWORD ------------------------------- #
+def find_password():
+    website = website_input.get()
+    print(website)
+    try:
+        with open("data.json", "r") as file:
+            data = json.load(file)
+            website_info = data[website]
+    except FileNotFoundError:
+        messagebox.askokcancel(title="No File", message="No Data File Found")
+    except KeyError:
+        messagebox.askokcancel(title="Error", message=f"No details {website} exists")
+    else:
+        email = website_info['email']
+        password = website_info['password']
+        messagebox.askokcancel(title=website, message=f"email = {email} \npassword = {password}")
+
+
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
 def generate_password():
     letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u',
@@ -58,6 +76,7 @@ def save():
             website_input.delete(0, END)
             password_input.delete(0, END)
 
+
 # ---------------------------- UI SETUP ------------------------------- #
 window = Tk()
 window.title("Password Manager")
@@ -79,8 +98,8 @@ password_label = Label(text="Password:")
 password_label.grid(column=0, row=3)
 
 # Entry
-website_input = Entry(width=52)
-website_input.grid(column=1, row=1, columnspan=2)
+website_input = Entry(width=33)
+website_input.grid(column=1, row=1)
 website_input.focus()
 
 email_username_input = Entry(width=52)
@@ -91,6 +110,9 @@ password_input = Entry(width=33)
 password_input.grid(column=1, row=3)
 
 # Buttons
+find_pwd_button = Button(text="Search", width=15, command=find_password)
+find_pwd_button.grid(column=2, row=1)
+
 generate_pwd_button = Button(text="Generate Password", command=generate_password)
 generate_pwd_button.grid(column=2, row=3)
 
