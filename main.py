@@ -40,16 +40,21 @@ def save():
     if website == "" or password == "":
         messagebox.askokcancel(title="Oops", message="Don't leave any fields empty!")
     else:
-        with open("data.json", "r") as file:
-            # Reading old data
-            data = json.load(file)
+        try:
+            with open("data.json", "r") as file:
+                # Reading old data
+                data = json.load(file)
+        except FileNotFoundError:
+            with open("data.json", "w") as file:
+                json.dump(new_data, file, indent=4)
+        else:
             # updating old data with new data
             data.update(new_data)
 
-        with open("data.json", "w") as file:
-            # saving updated data
-            json.dump(new_data, file, indent=4)
-
+            with open("data.json", "w") as file:
+                # saving updated data
+                json.dump(data, file, indent=4)
+        finally:
             website_input.delete(0, END)
             password_input.delete(0, END)
 
